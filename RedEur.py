@@ -1,7 +1,5 @@
 import scrapy
 import json
-#europa siempre ha de ser el ultimo
-
 
 class primerSpyder(scrapy.Spider):
     name='refeur'
@@ -13,7 +11,7 @@ class primerSpyder(scrapy.Spider):
     }
     def start_requests(self):
         data=self.dotos
-        urll=(f'https://www.redalyc.org/service/r2020/getArticles/{data}/1/1/1/default')
+        urll=(f'NameSite{data}')
         yield scrapy.Request(urll,callback=self.parse_rr)
 
     def parseura(self, response):
@@ -23,8 +21,7 @@ class primerSpyder(scrapy.Spider):
         if pr:
           mark=response.xpath('nextCursorMark/text()').get()
           count=response.xpath('hitCount/text()').get()
-          #pagi=(f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=russo%20en%20venezuela&cursorMark={mark}&resultType=lite&format=xml')
-          pagi=(f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query={dato}&cursorMark={mark}&resultType=lite&format=xml')
+          pagi=(f'NameSite{dato}{mark}&resultType=lite&format=xml')
           if mark:
             id=response.xpath('resultList/result/id/text()').getall()
             doi=response.xpath('resultList/result/doi/text()').getall()
@@ -45,7 +42,7 @@ class primerSpyder(scrapy.Spider):
                 'Palabras_Claves':(''),
                 'Tipo_Publicacion':ti,
                 'Idioma':(''),
-                'Link':(f'https://europepmc.org/article/{so}/{i}'),
+                'Link':(f'NameSite/{so}/{i}'),
                 'Revista': nr,
                 'Veces_citados':si,
                 'Ano_Publicacion': an,
@@ -54,9 +51,6 @@ class primerSpyder(scrapy.Spider):
               yield item
             if id:
               yield scrapy.Request(url=pagi,callback=self.parseura)
-            #else:
-             # urll=(f'https://www.redalyc.org/service/r2020/getArticles/{dato}/1/100/1/default')
-              #yield scrapy.Request(urll,callback=self.parse_rr)
           else:
             if count == '1':
               id=response.xpath('resultList/result/id/text()').get()
@@ -77,15 +71,13 @@ class primerSpyder(scrapy.Spider):
                   'Palabras_Claves':(''),
                   'Tipo_Publicacion':tipo,
                   'Idioma':(''),
-                  'Link':(f'https://europepmc.org/article/{sour}/{id}'),
+                  'Link':(f'NameSite/{sour}/{id}'),
                   'Revista': nombreRevista,
                   'Veces_citados':sitas,
                   'Ano_Publicacion': anopublicacion,
                   'Open_access':open,   
                   }
               yield item
-           #   urll=(f'https://www.redalyc.org/service/r2020/getArticles/{dato}/1/100/1/default')
-            #  yield scrapy.Request(urll,callback=self.parse_rr)
             else:
               id=response.xpath('resultList/result/id/text()').getall()
               doi=response.xpath('resultList/result/doi/text()').getall()
@@ -106,7 +98,7 @@ class primerSpyder(scrapy.Spider):
                   'Palabras_Claves':(''),
                   'Tipo_Publicacion':ti,
                   'Idioma':(''),
-                  'Link':(f'https://europepmc.org/article/{so}/{i}'),
+                  'Link':(f'NameSite/{so}/{i}'),
                   'Revista': nr,
                   'Veces_citados':si,
                   'Ano_Publicacion': an,
@@ -139,21 +131,16 @@ class primerSpyder(scrapy.Spider):
           dirre=dire
         print(dirre)
         for i in range(1,dirre+1):
-        #for i in range(1,3):
-          #url=(f'https://www.redalyc.org/service/r2020/getArticles/russo%20en%20venezuela/{i}/1000/1/default')
-          urll=(f'https://www.redalyc.org/service/r2020/getArticles/{dato}/{i}/1000/1/default')
+          urll=(f'NameSite/{dato}/{i}/1000/1/default')
           yield scrapy.Request(url=urll,callback=self.parse_ar)
-        url=(f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query={dato}')
+        url=(f'NameSite{dato}')
         yield scrapy.Request(url=url,callback=self.parseura)
       
     def parse_ar(self,response):
       pr= response.url
-      #dato=self.dotos
       if pr:
         data=response.body
         dat=json.loads(data)
-        #rac=dat['totalResultados']
-        #url=(f'https://www.redalyc.org/service/r2020/getArticles/{dato}/1/{rac}/1/default')  
         for i in range(0,1000):
           anioArticulo= dat['resultados'][i]['anioArticulo']
           if anioArticulo:
@@ -170,7 +157,6 @@ class primerSpyder(scrapy.Spider):
             autores= dat['resultados'][i]['autores']
           else:
             autores= ""
-          #contenido= dat['resultados'][i]['contenido']
           idiomaArticulo= dat['resultados'][i]['idiomaArticulo']
           if idiomaArticulo:
             idiomaArticulo= dat['resultados'][i]['idiomaArticulo']
@@ -205,7 +191,7 @@ class primerSpyder(scrapy.Spider):
             'Palabras_Claves':palabras,
             'Tipo_Publicacion':(""),
             'Idioma':idiomaArticulo,
-            'Link':(f'https://www.redalyc.org/pdf/{ruta}'),
+            'Link':(f'NameSite/{ruta}'),
             'Revista': nomRevista,
             'Veces_citados':(""),
             'Ano_Publicacion': anioArticulo,
